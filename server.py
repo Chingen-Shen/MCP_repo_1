@@ -14,6 +14,7 @@ from tools.get_trivia_tool import get_trivia_data
 from tools.weather_tool import get_weather_data
 from tools.fact_tool import get_fun_fact_data
 from tools.advice_tool import get_advice_data
+from tools.web_search_tool import web_search_data
 
 mcp = FastMCP("第1組-TravelAdvisor")
 
@@ -36,6 +37,13 @@ def get_fun_fact() -> str:
 def get_advice() -> str:
     """旅行前的人生建議。"""
     return get_advice_data()
+
+@mcp.tool()
+def web_search(query: str) -> str:
+    """即時搜尋網路資訊（搜尋景點、美食、天氣等）。
+    當使用者需要最新的旅遊動態、在地美食評論或各國景點資訊時使用。
+    """
+    return web_search_data(query)
 
 
 @mcp.tool()
