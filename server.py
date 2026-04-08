@@ -87,4 +87,4 @@ def get_advice() -> str:
 
 
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run("sse")
