@@ -9,9 +9,11 @@ W8 分組實作：MCP Server
 """
 
 from mcp.server.fastmcp import FastMCP
+from fastapi.middleware.cors import CORSMiddleware
 from tools.weather_tool import get_weather_data
 from tools.fact_tool import get_fun_fact_data
 from tools.advice_tool import get_advice_data
+from starlette.responses import Response
 
 mcp = FastMCP("第1組-TravelAdvisor")
 
@@ -92,4 +94,27 @@ def get_advice() -> str:
 
 
 if __name__ == "__main__":
-    mcp.run()
+    import uvicorn
+    # 取得底層的 Starlette app 並加入 CORS 支援
+    app = mcp.sse_app()
+    
+    # 手動處理 OPTIONS 請求，確保預檢（Preflight）能成功
+    async def sse_options(request):
+        return Response(
+            status_code=200,
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "*",
+                "Access-Control-Allow-Headers": "*",
+            }
+        )
+    app.add_route("/sse", sse_options, methods=["OPTIONS"])
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    # 使用手動啟動的方式，確保 CORS 介面生效
+    uvicorn.run(app, host="0.0.0.0", port=8000)
