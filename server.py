@@ -37,24 +37,48 @@ def hello(name: str) -> str:
 
 
 @mcp.tool()
-def get_trivia(topic: str = "隨機") -> str:
-    """提供旅途相關的知識問答（Trivia）。
-    當使用者詢問旅遊常識、旅行小知識、出國須知或想測試旅遊知識時使用。
-    topic 可選：交通、安全、文化、美食、語言、隨機
+def get_trivia() -> str:
+    """旅途知識問答（從 OpenTDB 獲取真實題目）。
+    當使用者想玩問答遊戲、測試旅遊或地理常識時使用。
     """
-    valid_topics = ["交通", "安全", "文化", "美食", "語言"]
-    topic_hint = topic if topic in valid_topics else "任意旅途相關"
+    import httpx
+    import html
+    import random
 
-    return (
-        f"請你扮演一位旅遊達人，針對「{topic_hint}」主題，"
-        f"自由發揮出一道有趣的旅途知識問答（Trivia）。\n\n"
-        f"格式如下：\n"
-        f"🌍【旅途知識問答 — {topic_hint}】\n\n"
-        f"❓ 問題：（請自行設計一個有趣、實用的旅遊問題）\n\n"
-        f"✅ 解答：（請提供清楚且知識性的解答）\n\n"
-        f"請用繁體中文回答，內容要有趣、實用，讓旅人印象深刻。\n"
-        f"（可選主題：{'、'.join(valid_topics)}、隨機）"
-    )
+    # OpenTDB API, category 22 是地理 (Geography)，適合旅途主題
+    url = "https://opentdb.com/api.php?amount=1&category=22"
+    
+    try:
+        response = httpx.get(url, timeout=10.0)
+        response.raise_for_status()
+        data = response.json()
+
+        if data.get("response_code") != 0:
+            return "暫時找不到題目，請稍後再試。"
+
+        result = data["results"][0]
+        question = html.unescape(result["question"])
+        correct_answer = html.unescape(result["correct_answer"])
+        incorrect_answers = [html.unescape(ans) for ans in result["incorrect_answers"]]
+        category = html.unescape(result["category"])
+        difficulty = result["difficulty"].capitalize()
+
+        # 組合所有選項並打散
+        options = incorrect_answers + [correct_answer]
+        random.shuffle(options)
+
+        options_str = "\n".join([f"- {opt}" for opt in options])
+
+        return (
+            f"🌍【旅途知識問答 — {category}】\n"
+            f"標籤：{difficulty}\n\n"
+            f"❓ 問題：{question}\n\n"
+            f"💡 選項：\n{options_str}\n\n"
+            f"請想好答案後，問我正確解答！"
+        )
+    except Exception as e:
+        return f"連線到題庫時發生錯誤：{str(e)}"
+
 
 
 # ════════════════════════════════
