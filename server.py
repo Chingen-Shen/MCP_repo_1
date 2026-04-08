@@ -28,18 +28,6 @@ def get_weather(city: str) -> str:
     return get_weather_data(city)
 
 @mcp.tool()
-def get_activity(city: str = None) -> str:
-    """推薦旅行中的休閒活動內容。可指定城市。"""
-    return get_activity_data(city)
-
-@mcp.tool()
-def get_trivia(topic: str = "隨機") -> str:
-    """提供旅途相關的知識問答（Trivia）。
-    topic 可選：交通、安全、文化、美食、語言、隨機
-    """
-    return get_trivia_data(topic)
-
-@mcp.tool()
 def get_fun_fact() -> str:
     """旅途趣味冷知識。"""
     return get_fun_fact_data()
@@ -48,6 +36,12 @@ def get_fun_fact() -> str:
 def get_advice() -> str:
     """旅行前的人生建議。"""
     return get_advice_data()
+
+
+@mcp.tool()
+def get_activity(city: str = None) -> str:
+    """推薦旅行中的休閒活動內容。可指定城市。"""
+    return get_activity_data(city)
 
 # ════════════════════════════════
 #  Resource：提供靜態參考資料
