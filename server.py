@@ -9,29 +9,39 @@ W8 分組實作：MCP Server
 """
 
 from mcp.server.fastmcp import FastMCP
+from tools.get_activity_tool import get_activity_data
+from tools.get_trivia_tool import get_trivia_data
+from tools.weather_tool import get_weather_data
+from tools.fact_tool import get_fun_fact_data
+from tools.advice_tool import get_advice_data
 
-mcp = FastMCP("第X組-server")
+mcp = FastMCP("第1組-TravelAdvisor")
 
 
 # ════════════════════════════════
 #  Tools：各組員各自負責一個 Tool
 # ════════════════════════════════
 
-# 範例（替換成你們自己的 Tool）：
-# from tools.weather_tool import get_weather_data
-#
-# @mcp.tool()
-# def get_weather(city: str) -> str:
-#     """取得指定城市的即時天氣資訊。
-#     當使用者詢問天氣、溫度、是否該帶傘時使用。"""
-#     return get_weather_data(city)
+@mcp.tool()
+def get_weather(city: str) -> str:
+    """取得指定城市的即時天氣資訊。當使用者詢問天氣、溫度時使用。"""
+    return get_weather_data(city)
+
+@mcp.tool()
+def get_fun_fact() -> str:
+    """旅途趣味冷知識。"""
+    return get_fun_fact_data()
+
+@mcp.tool()
+def get_advice() -> str:
+    """旅行前的人生建議。"""
+    return get_advice_data()
 
 
 @mcp.tool()
-def hello(name: str) -> str:
-    """跟使用者打招呼。測試用，確認 MCP Server 正常運作。"""
-    return f"你好，{name}！MCP Server 運作正常 🎉"
-
+def get_activity(city: str = None) -> str:
+    """推薦旅行中的休閒活動內容。可指定城市。"""
+    return get_activity_data(city)
 
 # ════════════════════════════════
 #  Resource：提供靜態參考資料
@@ -71,5 +81,4 @@ def hello(name: str) -> str:
 
 
 if __name__ == "__main__":
-    print("MCP Server 啟動中... http://localhost:8000")
-    mcp.run(transport="sse")
+    mcp.run("sse")
