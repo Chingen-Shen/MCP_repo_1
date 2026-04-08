@@ -53,6 +53,32 @@ def get_advice() -> str:
     """提供一則旅行前的人生建議。"""
     return get_advice_data()
 
+@mcp.tool()
+def web_search(query: str) -> str:
+    """即時搜尋網路資訊（搜尋景點、美食、天氣等）。
+    當使用者需要最新的旅遊動態、在地美食評論或各國景點資訊時使用。
+    """
+    from duckduckgo_search import DDGS
+    
+    try:
+        results = []
+        with DDGS() as ddgs:
+            # 取得前 5 筆結果
+            for r in ddgs.text(query, max_results=5):
+                results.append(
+                    f"🔗 [{r['title']}]({r['href']})\n"
+                    f"📝 {r['body']}\n"
+                )
+        
+        if not results:
+            return f"找不到關於「{query}」的相關資訊。"
+
+        content = "\n---\n".join(results)
+        return f"🔍 【網路搜尋結果：{query}】\n\n{content}"
+        
+    except Exception as e:
+        return f"搜尋時發生錯誤，請稍後再試。 (錯誤: {str(e)})"
+
 
 # ════════════════════════════════
 #  Resource：提供靜態參考資料
