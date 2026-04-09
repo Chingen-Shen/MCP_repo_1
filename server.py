@@ -14,6 +14,7 @@ from tools.get_trivia_tool import get_trivia_data
 from tools.weather_tool import get_weather_data
 from tools.fact_tool import get_fun_fact_data
 from tools.advice_tool import get_advice_data
+from tools.get_trivia_tool import get_trivia_data
 from tools.web_search_tool import web_search_data
 
 mcp = FastMCP("第1組-TravelAdvisor")
@@ -24,6 +25,13 @@ mcp = FastMCP("第1組-TravelAdvisor")
 # ════════════════════════════════
 
 @mcp.tool()
+def get_trivia() -> str:
+    """旅途知識問答（從 OpenTDB 獲取真實題目）。
+    當使用者想玩問答遊戲、測試旅遊或地理常識時使用。
+    """
+    return get_trivia_data()
+
+
 def get_weather(city: str) -> str:
     """取得指定城市的即時天氣資訊。當使用者詢問天氣、溫度時使用。"""
     return get_weather_data(city)
