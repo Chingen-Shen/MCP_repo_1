@@ -41,12 +41,16 @@
 ```
 ├── server.py              # MCP Server 主程式
 ├── agent.py               # MCP Client + Gemini Agent（用 AI 產生）
+├── check_models.py
 ├── tools/
 │   ├── __init__.py
 │   ├── example_tool.py    # 範例（可刪除）
-│   ├── xxx_tool.py        # 組員 A 的 Tool
-│   ├── xxx_tool.py        # 組員 B 的 Tool
-│   └── xxx_tool.py        # 組員 C 的 Tool
+│   ├── advice_tool.py     # 沈靖恩 的 Tool
+│   ├── fact_tool.py       # 沈靖恩 的 Tool
+│   ├── get_activity_tool.py    # 黃柏豪 的 Tool
+│   ├── get_trivia_tool.py      # 黃柏豪 的 Tool
+│   ├── weather_tool.py         # 沈靖恩 的 Tool
+│   └── web_search_tool.py      # 黃柏豪 的 Tool
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
@@ -92,33 +96,257 @@ python agent.py
 
 ## 各 Tool 說明
 
-### `tool_name`（負責：姓名）
+### `advice_tool`（負責：沈靖恩）
 
-- **功能**：
-- **使用 API**：
+- **功能**：旅行前的人生建議
+- **使用 API**：https://api.adviceslip.com/advice
 - **參數**：
 - **回傳範例**：
 
 ```python
-@mcp.tool()
-def tool_name(param: str) -> str:
-    """Tool 的 docstring（這就是 AI 看到的描述）"""
-    ...
+import requests
+
+def get_advice_data() -> str:
+    """旅行前的人生建議。"""
+    try:
+        url = "https://api.adviceslip.com/advice"
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return f"🌟 給您的旅行建議：\n{data['slip']['advice']}"
+    except Exception as e:
+        return f"無法獲取建議：{str(e)}"
 ```
 
-### `tool_name`（負責：姓名）
+### `fact_tool`（負責：沈靖恩）
 
-- **功能**：
-- **使用 API**：
+- **功能**：旅途趣味冷知識
+- **使用 API**：https://uselessfacts.jsph.pl/api/v2/facts/random	
 - **參數**：
 - **回傳範例**：
 
-### `tool_name`（負責：姓名）
+```python
+import requests
 
-- **功能**：
-- **使用 API**：
+def get_fun_fact_data() -> str:
+    """旅途趣味冷知識。"""
+    try:
+        url = "https://uselessfacts.jsph.pl/api/v2/facts/random"
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return f"💡 旅途冷知識：\n{data['text']}"
+    except Exception as e:
+        return f"無法獲取冷知識：{str(e)}"
+```
+
+  
+
+### `get_activity_tool`（負責：黃柏豪）
+
+- **功能**：推薦活動
+- **使用 API**：https://bored-api.appbrewery.com/random	
 - **參數**：
 - **回傳範例**：
+
+```python
+"""
+Tool：取得當地活動
+
+輸入地點的關鍵字後，會回傳一系列的活動建議。
+"""
+
+import httpx
+
+TOOL_INFO = {
+    "name": "get_activity",
+    "api": "https://bored-api.appbrewery.com/random",
+    "author": "黃柏豪",
+}
+
+def get_activity_data(city: str = None) -> str:
+    """推薦活動（透過 Bored API 取得靈感）。
+    當使用者覺得無聊、想找點事情做或需要活動建議時使用。
+    """
+    url = "https://bored-api.appbrewery.com/random"
+    try:
+        # 設定較短的 timeout 避免阻塞
+        response = httpx.get(url, timeout=10.0)
+        response.raise_for_status()
+        data = response.json()
+
+        activity = data.get("activity", "找不到活動內容")
+        category = data.get("type", "其他")
+        participants = data.get("participants", 1)
+        price_range = data.get("price", 0)
+
+        # 簡單的活動類別對應表
+        type_map = {
+            "education": "📚 教育學習",
+            "recreational": "🎾 休閒娛樂",
+            "social": "👯 社交活動",
+            "diy": "🛠️ 手作 DIY",
+            "charity": "💖 公益慈善",
+            "cooking": "🍳 烹飪美食",
+            "relaxation": "🧘 放鬆身心",
+            "music": "🎵 音樂藝術",
+            "busywork": "📋 規律事務",
+        }
+        category_zh = type_map.get(category, category)
+
+        # 價格描述
+        price_msg = "💎 免費" if price_range == 0 else "💳 付費活動" if price_range > 0.5 else "🪙 低花費"
+
+        city_prefix = f"在 {city} " if city else ""
+        return (
+            f"🎯【活動推薦】\n\n"
+            f"💡 建議：{city_prefix}{activity}\n"
+            f"🏷️ 類型：{category_zh}\n"
+            f"👥 人數：{participants} 人\n"
+            f"💰 花費：{price_msg}\n\n"
+            f"這是一個不錯的點子，試試看吧！✨"
+        )
+    except Exception as e:
+        return f"暫時無法取得活動建議，請稍後再試。 (錯誤: {str(e)})"
+
+```
+
+### `get_trivia_tool`（負責：黃柏豪）
+
+- **功能**：旅途知識問答
+- **使用 API**：https://opentdb.com/api.php?amount=1	
+- **參數**：
+- **回傳範例**：
+
+```python
+mport requests
+
+# Tool 資訊（給人看的，不影響 MCP）
+TOOL_INFO = {
+    "name": "get_trivia",
+    "api": "https://opentdb.com/api.php?amount=1&category=22",
+    "author": "黃柏豪",
+}
+
+def get_trivia_data() -> str:
+    """旅途知識問答（從 OpenTDB 獲取真實題目）。
+    當使用者想玩問答遊戲、測試旅遊或地理常識時使用。
+    """
+    import httpx
+    import html
+    import random
+
+    # OpenTDB API, category 22 是地理 (Geography)，適合旅途主題
+    url = "https://opentdb.com/api.php?amount=1&category=22"
+    
+    try:
+        response = httpx.get(url, timeout=10.0)
+        response.raise_for_status()
+        data = response.json()
+
+        if data.get("response_code") != 0:
+            return "暫時找不到題目，請稍後再試。"
+
+        result = data["results"][0]
+        question = html.unescape(result["question"])
+        correct_answer = html.unescape(result["correct_answer"])
+        incorrect_answers = [html.unescape(ans) for ans in result["incorrect_answers"]]
+        category = html.unescape(result["category"])
+        difficulty = result["difficulty"].capitalize()
+
+        # 組合所有選項並打散
+        options = incorrect_answers + [correct_answer]
+        random.shuffle(options)
+
+        options_str = "\n".join([f"- {opt}" for opt in options])
+
+        return (
+            f"🌍【旅途知識問答 — {category}】\n"
+            f"標籤：{difficulty}\n\n"
+            f"❓ 問題：{question}\n\n"
+            f"💡 選項：\n{options_str}\n\n"
+            f"請想好答案後，問我正確解答！"
+        )
+    except Exception as e:
+        return f"連線到題庫時發生錯誤：{str(e)}"
+```
+### `weather_tool`（負責：沈靖恩）
+
+- **功能**：查詢目的地天氣
+- **使用 API**：https://wttr.in/{city}?format=j1	
+- **參數**：
+- **回傳範例**：
+
+```python
+import requests
+
+def get_weather_data(city: str) -> str:
+    """取得指定城市的即時天氣資訊。"""
+    try:
+        url = f"https://wttr.in/{city}?format=j1"
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        
+        current = data['current_condition'][0]
+        temp_c = current['temp_C']
+        desc = current['weatherDesc'][0]['value']
+        humidity = current['humidity']
+        
+        return f"📍 {city} 的當前天氣：\n🌡️ 溫度：{temp_c}°C\n🌤️ 況狀：{desc}\n💧 濕度：{humidity}%"
+    except Exception as e:
+        return f"無法取得天氣資訊：{str(e)}"
+```
+### `web_search_tool`（負責：沈靖恩）
+
+- **功能**：搜尋景點、美食
+- **使用 API**：duckduckgo-search	
+- **參數**：
+- **回傳範例**：
+
+```python
+import requests
+from ddgs import DDGS
+import logging
+
+# 設定小型日誌
+logger = logging.getLogger(__name__)
+
+def web_search_data(query: str) -> str:
+    """即時搜尋網路資訊（搜尋景點、美食、天氣等）。
+    當使用者需要最新的旅遊動態、在地美食評論或各國景點資訊時使用。
+    """
+    try:
+        results = []
+        # 使用 DDGS 進行網路搜尋
+        with DDGS() as ddgs:
+            # max_results=5 取得前 5 筆結果
+            # 可以根據需求設定 region，例如 'wt-wt' (全球) 或 'tw-tzh' (台灣)
+            for r in ddgs.text(query, max_results=5):
+                title = r.get('title', '無標題')
+                href = r.get('href', '#')
+                body = r.get('body', '無摘要內容')
+                
+                results.append(
+                    f"🔗 [{title}]({href})\n"
+                    f"📝 {body}\n"
+                )
+        
+        if not results:
+            return f"🔍 搜尋結果：找不到關於「{query}」的相關內容。請嘗試更換關鍵字再試一次。"
+
+        content = "\n---\n".join(results)
+        return (
+            f"🔍 【網路搜尋結果：{query}】\n\n"
+            f"{content}\n\n"
+            f"---\n"
+            f"*資訊來自 DuckDuckGo 搜尋*"
+        )
+        
+    except Exception as e:
+        logger.error(f"Web search error: {str(e)}")
+        return f"⚠️ 搜尋時發生錯誤，請稍後再試。 (詳細資訊: {str(e)})"
+```
 
 ---
 
@@ -127,6 +355,9 @@ def tool_name(param: str) -> str:
 ### 遇到最難的問題
 
 > 寫下這次實作遇到最困難的事，以及怎麼解決的
+> 沈靖恩覺得最困難的就是ai一直跑啊跑，說了一大堆問題，然後說自己會解決，但是跑了三百年都沒解決。
+> 最後的解法就是，沈靖恩在乾瞪程式碼之後決定問老師。
+> 後來發現沒辦法connect的原因是程式碼的網址和mcp inspector的不一樣 並且transport type選錯了，更改之後，他就能正常connect了！！
 
 ### MCP 跟上週的 Tool Calling 有什麼不同？
 
