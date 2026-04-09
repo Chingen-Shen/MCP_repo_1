@@ -88,6 +88,13 @@ python agent.py
 
 > 貼上 Inspector 的截圖（Tools / Resources / Prompts 三個分頁都要有）
 
+<img width="1440" height="900" alt="截圖 2026-04-09 22 28 19" src="https://github.com/user-attachments/assets/6101801b-7a6c-47bf-8901-dc76d597af0c" />
+<img width="1440" height="900" alt="截圖 2026-04-09 22 29 44" src="https://github.com/user-attachments/assets/4cebef7e-1379-4e38-baf3-82c44b173a92" />
+<img width="1440" height="900" alt="截圖 2026-04-09 22 30 21" src="https://github.com/user-attachments/assets/cb7bb1e3-3bc8-42ed-83e0-b78378080013" />
+<img width="1440" height="900" alt="截圖 2026-04-09 22 31 22" src="https://github.com/user-attachments/assets/a0924e78-3321-4288-9010-8c96ca166a77" />
+<img width="1440" height="900" alt="截圖 2026-04-09 22 31 32" src="https://github.com/user-attachments/assets/22c3386d-1b32-49de-9ce4-f6c04539d9a2" />
+
+
 ### Agent 對話截圖
 
 > 貼上 Agent 對話的截圖（顯示 Gemini 呼叫 Tool 的過程，以及使用 /use 呼叫 Prompt 的結果）
