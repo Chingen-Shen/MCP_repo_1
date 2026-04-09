@@ -11,9 +11,13 @@
 
 | Tool 名稱                 | 功能說明     | 負責組員 |
 | ------------------------- | ------------ | -------- |
-| （範例：`get_weather`） | 查詢即時天氣 |          |
-|                           |              |          |
-|                           |              |          |
+|  weather_tool             | 查詢即時天氣   |  沈靖恩   |
+|  fact_tool                | 旅途趣味冷知識 |  沈靖恩   |
+|  advice_tool              | 旅行前的人生建議 |  沈靖恩   |
+|  get_activity_tool        | 推薦活動      |  黃柏豪   |
+|  get_trivia_tool          | 旅途知識問答   |  黃柏豪   |
+|  web_search_tool          | 搜尋景點、美食 |  黃柏豪   |
+
 
 ---
 
@@ -21,11 +25,14 @@
 
 | 姓名 | 負責功能            | 檔案          | 使用的 API |
 | ---- | ------------------- | ------------- | ---------- |
-|      |                     | `tools/`    |            |
-|      |                     | `tools/`    |            |
-|      |                     | `tools/`    |            |
-|      | Resource + Prompt   | `server.py` | —         |
-|      | Agent（用 AI 產生） | `agent.py`  | Gemini API |
+| 沈靖恩 | 查詢即時天氣         | `tools/`    |  "https://wttr.in/{city}?format=j1" |
+| 沈靖恩 | 旅途趣味冷知識       | `tools/`     | "https://uselessfacts.jsph.pl/api/v2/facts/random" |
+| 沈靖恩 | 旅行前的人生建議      | `tools/`    |  "	https://api.adviceslip.com/advice" |
+| 黃柏豪 | 推薦活動            | `tools/`    |  "https://bored-api.appbrewery.com/random" |
+| 黃柏豪 | 旅途知識問答         | `tools/`    |  "https://opentdb.com/api.php?amount=1" |
+| 黃柏豪 | 搜尋景點、美食       | `tools/`    |  "duckduckgo-search" |
+| 黃柏豪 | Resource + Prompt  | `server.py` | —         |
+| 黃柏豪 | Agent（用 AI 產生）  | `agent.py`  | Gemini API |
 
 ---
 
