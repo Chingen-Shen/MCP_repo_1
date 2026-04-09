@@ -17,6 +17,13 @@ from tools.weather_tool import get_weather_data
 from tools.fact_tool import get_fun_fact_data
 from tools.advice_tool import get_advice_data
 from tools.web_search_tool import web_search_data
+from tools.weather_tool import get_weather_data
+from tools.fact_tool import get_fun_fact_data
+from tools.advice_tool import get_advice_data
+from starlette.responses import Response
+from tools.get_activity_tool import get_activity_data
+from tools.get_trivia_tool import get_trivia_data
+
 
 
 mcp = FastMCP("第1組-TravelAdvisor")
