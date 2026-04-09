@@ -9,10 +9,13 @@ W8 分組實作：MCP Server
 """
 
 from mcp.server.fastmcp import FastMCP
+from tools.get_activity_tool import get_activity_data
+from tools.get_trivia_tool import get_trivia_data
 from tools.weather_tool import get_weather_data
 from tools.fact_tool import get_fun_fact_data
 from tools.advice_tool import get_advice_data
 from tools.get_trivia_tool import get_trivia_data
+from tools.web_search_tool import web_search_data
 
 mcp = FastMCP("第1組-TravelAdvisor")
 
@@ -20,22 +23,6 @@ mcp = FastMCP("第1組-TravelAdvisor")
 # ════════════════════════════════
 #  Tools：各組員各自負責一個 Tool
 # ════════════════════════════════
-
-# 範例（替換成你們自己的 Tool）：
-# from tools.weather_tool import get_weather_data
-#
-# @mcp.tool()
-# def get_weather(city: str) -> str:
-#     """取得指定城市的即時天氣資訊。
-#     當使用者詢問天氣、溫度、是否該帶傘時使用。"""
-#     return get_weather_data(city)
-
-
-@mcp.tool()
-def hello(name: str) -> str:
-    """跟使用者打招呼。測試用，確認 MCP Server 正常運作。"""
-    return f"你好，{name}！MCP Server 運作正常 🎉"
-
 
 @mcp.tool()
 def get_trivia() -> str:
@@ -45,6 +32,32 @@ def get_trivia() -> str:
     return get_trivia_data()
 
 
+def get_weather(city: str) -> str:
+    """取得指定城市的即時天氣資訊。當使用者詢問天氣、溫度時使用。"""
+    return get_weather_data(city)
+
+@mcp.tool()
+def get_fun_fact() -> str:
+    """旅途趣味冷知識。"""
+    return get_fun_fact_data()
+
+@mcp.tool()
+def get_advice() -> str:
+    """旅行前的人生建議。"""
+    return get_advice_data()
+
+@mcp.tool()
+def web_search(query: str) -> str:
+    """即時搜尋網路資訊（搜尋景點、美食、天氣等）。
+    當使用者需要最新的旅遊動態、在地美食評論或各國景點資訊時使用。
+    """
+    return web_search_data(query)
+
+
+@mcp.tool()
+def get_activity(city: str = None) -> str:
+    """推薦旅行中的休閒活動內容。可指定城市。"""
+    return get_activity_data(city)
 
 # ════════════════════════════════
 #  Resource：提供靜態參考資料
@@ -81,6 +94,31 @@ def get_trivia() -> str:
 #         f"3. 附上一則笑話或建議讓我開心\n"
 #         f"請用繁體中文回答。"
 #     )
+
+
+@mcp.prompt()
+def plan_trip(city: str) -> str:
+    """產生旅遊行前簡報的提示詞"""
+    return (
+        f"我要去 {city} 旅行，請幫我準備一份完整的行前簡報：\n"
+        f"1. 查詢 {city} 的天氣，判斷需要帶什麼衣物\n"
+        f"2. 給我一則旅遊相關的冷知識或趣味資訊\n"
+        f"3. 給我一則旅行前的人生建議\n"
+        f"4. 推薦 2-3 個在 {city} 可以做的活動\n"
+        f"請用繁體中文，語氣活潑。"
+    )
+
+@mcp.prompt()
+def local_folklore(city: str) -> str:
+    """查詢當地的風俗文化、禁忌與宗教習俗"""
+    return (
+        f"我想深入了解 {city} 的在地文化，請幫我進行以下研究：\n"
+        f"1. 使用 web_search 查詢「{city} 旅遊禁忌」與「{city} 在地習俗」\n"
+        f"2. 查詢當地的宗教信仰或特色節慶（如寺廟禮儀、傳統祭典等）\n"
+        f"3. 整理出給旅人的 3 個重要文化建議，避免冒犯當地人\n"
+        f"4. 根據搜尋結果，告訴我一個關於 {city} 的有趣民間傳說或歷史小故事\n"
+        f"請以專業且尊重當地文化的語氣撰寫，並使用繁體中文。"
+    )
 
 
 if __name__ == "__main__":
