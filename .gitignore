@@ -1,3 +1,12 @@
+.env
+__pycache__/server.cpython-313.pyc
+tools/__pycache__/__init__.cpython-313.pyc
+tools/__pycache__/advice_tool.cpython-313.pyc
+tools/__pycache__/fact_tool.cpython-313.pyc
+tools/__pycache__/get_activity_tool.cpython-313.pyc
+tools/__pycache__/get_trivia_tool.cpython-313.pyc
+tools/__pycache__/weather_tool.cpython-313.pyc
+tools/__pycache__/web_search_tool.cpython-313.pyc
 .venv/
 __pycache__/
 *.pyc
