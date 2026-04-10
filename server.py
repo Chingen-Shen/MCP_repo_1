@@ -9,7 +9,6 @@ W8 分組實作：MCP Server
 """
 
 from mcp.server.fastmcp import FastMCP
-from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 from tools.get_activity_tool import get_activity_data
 from tools.get_trivia_tool import get_trivia_data
@@ -17,12 +16,6 @@ from tools.weather_tool import get_weather_data
 from tools.fact_tool import get_fun_fact_data
 from tools.advice_tool import get_advice_data
 from tools.web_search_tool import web_search_data
-from tools.weather_tool import get_weather_data
-from tools.fact_tool import get_fun_fact_data
-from tools.advice_tool import get_advice_data
-from starlette.responses import Response
-from tools.get_activity_tool import get_activity_data
-from tools.get_trivia_tool import get_trivia_data
 
 
 
@@ -40,7 +33,7 @@ def get_trivia() -> str:
     """
     return get_trivia_data()
 
-
+@mcp.tool()
 def get_weather(city: str) -> str:
     """取得指定城市的即時天氣資訊。當使用者詢問天氣、溫度時使用。"""
     return get_weather_data(city)

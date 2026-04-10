@@ -1,9 +1,7 @@
 # MCP Server + AI agent 分組實作
 
 > 課程：AI Agent 開發 — MCP（Model Context Protocol）
-> 主題：（填入你們選的主題）
-
----
+> 主題：旅遊顧問 MCP Server
 
 ## Server 功能總覽
 
@@ -25,12 +23,12 @@
 
 | 姓名 | 負責功能            | 檔案          | 使用的 API |
 | ---- | ------------------- | ------------- | ---------- |
-| 沈靖恩 | 查詢即時天氣         | `tools/`    |  "https://wttr.in/{city}?format=j1" |
-| 沈靖恩 | 旅途趣味冷知識       | `tools/`     | "https://uselessfacts.jsph.pl/api/v2/facts/random" |
-| 沈靖恩 | 旅行前的人生建議      | `tools/`    |  "	https://api.adviceslip.com/advice" |
-| 黃柏豪 | 推薦活動            | `tools/`    |  "https://bored-api.appbrewery.com/random" |
-| 黃柏豪 | 旅途知識問答         | `tools/`    |  "https://opentdb.com/api.php?amount=1" |
-| 黃柏豪 | 搜尋景點、美食       | `tools/`    |  "duckduckgo-search" |
+| 沈靖恩 | 查詢即時天氣         | `tools/weather_tool.py`    |  "https://wttr.in/{city}?format=j1" |
+| 沈靖恩 | 旅途趣味冷知識       | `tools/fact_tool.py`     | "https://uselessfacts.jsph.pl/api/v2/facts/random" |
+| 沈靖恩 | 旅行前的人生建議      | `tools/advice_tool.py`    |  "	https://api.adviceslip.com/advice" |
+| 黃柏豪 | 推薦活動            | `tools/get_activity_tool.py`    |  "https://bored-api.appbrewery.com/random" |
+| 黃柏豪 | 旅途知識問答         | `tools/get_trivia_tool.py`    |  "https://opentdb.com/api.php?amount=1" |
+| 黃柏豪 | 搜尋景點、美食       | `tools/web_search_tool.py`    |  "duckduckgo-search" |
 | 黃柏豪 | Resource + Prompt  | `server.py` | —         |
 | 黃柏豪 | Agent（用 AI 產生）  | `agent.py`  | Gemini API |
 
@@ -89,9 +87,13 @@ python agent.py
 > 貼上 Inspector 的截圖（Tools / Resources / Prompts 三個分頁都要有）
 
 <img width="1440" height="900" alt="截圖 2026-04-09 22 28 19" src="https://github.com/user-attachments/assets/6101801b-7a6c-47bf-8901-dc76d597af0c" />
+
 <img width="1440" height="900" alt="截圖 2026-04-09 22 29 44" src="https://github.com/user-attachments/assets/4cebef7e-1379-4e38-baf3-82c44b173a92" />
+
 <img width="1440" height="900" alt="截圖 2026-04-09 22 30 21" src="https://github.com/user-attachments/assets/cb7bb1e3-3bc8-42ed-83e0-b78378080013" />
+
 <img width="1440" height="900" alt="截圖 2026-04-09 22 31 22" src="https://github.com/user-attachments/assets/a0924e78-3321-4288-9010-8c96ca166a77" />
+
 <img width="1440" height="900" alt="截圖 2026-04-09 22 31 32" src="https://github.com/user-attachments/assets/22c3386d-1b32-49de-9ce4-f6c04539d9a2" />
 
 
@@ -153,7 +155,7 @@ def get_fun_fact_data() -> str:
 
 - **功能**：推薦活動
 - **使用 API**：https://bored-api.appbrewery.com/random	
-- **參數**：
+- **參數**：String city
 - **回傳範例**：
 
 ```python
@@ -226,7 +228,7 @@ def get_activity_data(city: str = None) -> str:
 - **回傳範例**：
 
 ```python
-mport requests
+import requests
 
 # Tool 資訊（給人看的，不影響 MCP）
 TOOL_INFO = {
@@ -304,7 +306,7 @@ def get_weather_data(city: str) -> str:
     except Exception as e:
         return f"無法取得天氣資訊：{str(e)}"
 ```
-### `web_search_tool`（負責：沈靖恩）
+### `web_search_tool`（負責：黃柏豪）
 
 - **功能**：搜尋景點、美食
 - **使用 API**：duckduckgo-search	
