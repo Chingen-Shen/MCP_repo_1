@@ -62,6 +62,82 @@ async def run_agent():
                     if not user_input.strip():
                         continue
 
+                    # --- 處理以 / 開頭的指令 ---
+                    if user_input.startswith("/"):
+                        parts = user_input.split()
+                        cmd = parts[0].lower()
+
+                        if cmd == "/prompts":
+                            try:
+                                response = await session.list_prompts()
+                                print("\n💡 可用的 Prompts:")
+                                for p in response.prompts:
+                                    print(f"  - {p.name}: {p.description or '無描述'}")
+                            except Exception as e:
+                                print(f"❌ 無法取得 Prompts: {e}")
+                            continue
+
+                        elif cmd == "/resources":
+                            try:
+                                response = await session.list_resources()
+                                print("\n📚 可用的 Resources:")
+                                for r in response.resources:
+                                    print(f"  - {r.uri}: {r.name} ({r.description or '無描述'})")
+                            except Exception as e:
+                                print(f"❌ 無法取得 Resources: {e}")
+                            continue
+
+                        elif cmd == "/read":
+                            if len(parts) < 2:
+                                print("❌ 用法: /read <URI>")
+                                continue
+                            uri = parts[1]
+                            try:
+                                content = await session.read_resource(uri)
+                                print(f"\n📖 內容 [{uri}]:")
+                                for item in content.contents:
+                                    print(item.text)
+                            except Exception as e:
+                                print(f"❌ 無法讀取 Resource: {e}")
+                            continue
+
+                        elif cmd == "/use":
+                            if len(parts) < 2:
+                                print("❌ 用法: /use <Prompt名稱> [參數名=值 ...]")
+                                continue
+                            prompt_name = parts[1]
+                            arguments = {}
+                            for kv in parts[2:]:
+                                if "=" in kv:
+                                    k, v = kv.split("=", 1)
+                                    arguments[k] = v
+                            
+                            try:
+                                prompt_result = await session.get_prompt(prompt_name, arguments=arguments)
+                                # 組合 Prompt 內容
+                                prompt_text = ""
+                                for msg in prompt_result.messages:
+                                    if hasattr(msg.content, 'text'):
+                                        prompt_text += msg.content.text + "\n"
+                                    elif isinstance(msg.content, dict) and 'text' in msg.content:
+                                        prompt_text += msg.content['text'] + "\n"
+                                
+                                if not prompt_text.strip():
+                                    print("❌ 錯誤：此 Prompt 沒有文字內容。")
+                                    continue
+                                
+                                print(f"📝 正在使用 Prompt: {prompt_name}...")
+                                # 將 Prompt 內容作為 user_input 發送給 Gemini
+                                user_input = prompt_text
+                            except Exception as e:
+                                print(f"❌ 呼叫 Prompt 失敗: {e}")
+                                continue
+                        
+                        else:
+                            print(f"❓ 未知指令: {cmd}")
+                            continue
+                    # --- 指令處理結束 ---
+
                     # 呼叫 Gemini
                     # 注意：google-genai SDK 會自動處理某些部分，但我們需要手動處理 Tool Call 回傳
                     try:

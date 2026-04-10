@@ -310,7 +310,7 @@ def get_weather_data(city: str) -> str:
 
 - **功能**：搜尋景點、美食
 - **使用 API**：duckduckgo-search	
-- **參數**：
+- **參數**：String query
 - **回傳範例**：
 
 ```python
