@@ -30,7 +30,7 @@
 | 黃柏豪 | 旅途知識問答         | `tools/get_trivia_tool.py`    |  "https://opentdb.com/api.php?amount=1" |
 | 黃柏豪 | 搜尋景點、美食       | `tools/web_search_tool.py`    |  "duckduckgo-search" |
 | 黃柏豪 | Resource + Prompt  | `server.py` | —         |
-| 黃柏豪 | Agent（用 AI 產生）  | `agent.py`  | Gemini API |
+| 沈靖恩 | Agent（用 AI 產生）  | `agent.py`  | Gemini API |
 
 ---
 
@@ -86,20 +86,31 @@ python agent.py
 
 > 貼上 Inspector 的截圖（Tools / Resources / Prompts 三個分頁都要有）
 
-<img width="1440" height="900" alt="截圖 2026-04-09 22 28 19" src="https://github.com/user-attachments/assets/6101801b-7a6c-47bf-8901-dc76d597af0c" />
+Tools 截圖
+![MCP_Inspector_Tools](asset/imgs/MCP_Inspector_Tools.png)
 
-<img width="1440" height="900" alt="截圖 2026-04-09 22 29 44" src="https://github.com/user-attachments/assets/4cebef7e-1379-4e38-baf3-82c44b173a92" />
+Resources 截圖
+![MCP_Inspector_Resource](asset/imgs/MCP_Inspector_Resource.png)
 
-<img width="1440" height="900" alt="截圖 2026-04-09 22 30 21" src="https://github.com/user-attachments/assets/cb7bb1e3-3bc8-42ed-83e0-b78378080013" />
-
-<img width="1440" height="900" alt="截圖 2026-04-09 22 31 22" src="https://github.com/user-attachments/assets/a0924e78-3321-4288-9010-8c96ca166a77" />
-
-<img width="1440" height="900" alt="截圖 2026-04-09 22 31 32" src="https://github.com/user-attachments/assets/22c3386d-1b32-49de-9ce4-f6c04539d9a2" />
-
+Prompts 截圖
+![MCP_Inspector_Prompt](asset/imgs/MCP_Inspector_Prompt.png)
 
 ### Agent 對話截圖
 
 > 貼上 Agent 對話的截圖（顯示 Gemini 呼叫 Tool 的過程，以及使用 /use 呼叫 Prompt 的結果）
+
+
+#### Agent Prompt
+![Agent_Use_Prompt](asset/imgs/Agent_Use_Prompt.png)
+
+![Agent_Use_Prompt_2](asset/imgs/Agent_Use_Prompt_2.png)
+
+#### Agent Tool
+![Agent_Tool_getActivity](asset/imgs/Agent_Tool_getActivity.png)
+
+![Agent_Tool_getAdvice](asset/imgs/Agent_Tool_getAdvice.png)
+
+![Agent_Tool_Multi](asset/imgs/Agent_Tools_Mult.png)
 
 ---
 
@@ -364,10 +375,30 @@ def web_search_data(query: str) -> str:
 ### 遇到最難的問題
 
 > 寫下這次實作遇到最困難的事，以及怎麼解決的
-> 沈靖恩覺得最困難的就是ai一直跑啊跑，說了一大堆問題，然後說自己會解決，但是跑了三百年都沒解決。
-> 最後的解法就是，沈靖恩在乾瞪程式碼之後決定問老師。
-> 後來發現沒辦法connect的原因是程式碼的網址和mcp inspector的不一樣 並且transport type選錯了，更改之後，他就能正常connect了！！
+
+#### 沈靖恩
+沈靖恩覺得最困難的就是ai一直跑啊跑，說了一大堆問題，然後說自己會解決，但是跑了三百年都沒解決。
+最後的解法就是，沈靖恩在乾瞪程式碼之後決定問老師。
+後來發現沒辦法connect的原因是程式碼的網址和mcp inspector的不一樣 並且transport type選錯了，更改之後，他就能正常connect了！！
+
+#### 黃柏豪
+1. 在使用 Agent 遇上 Gemini Key 429 "too many requests" 的問題
+
+我在回顧程式碼中，發現在 web_search_tool.py 中會以不斷呼叫的方式向 API 請求且次數為 5 次。不僅加劇我 API 額度的消耗，也容易造成 API 請求失敗的問題。
+    
+因此我將程式碼修改為只會呼叫 2 次查詢功能，嘗試降低 API 消耗，並同時更換 API Key 以利撰寫回顧文檔。
+
+2. 無法在 agent 上直接使用 prompt 功能
+
+我撰寫 README.md時，嘗試截圖所有執行畫面，發現 Agent 無法直接用 /use 的提示詞去使用 prompt。
+
+透過 AI agent 協助我加上關鍵詞優先處理的 if-else，在讀到關鍵詞時強制執行某項功能，成功解決這個問題。
 
 ### MCP 跟上週的 Tool Calling 有什麼不同？
 
 > 用自己的話說說，做完後你覺得 MCP 的好處是什麼
+
+#### 黃柏豪
+我認為 MCP 的好處之一在於我們不用針對每個 Agent 撰寫不同的 API 串接邏輯，而是可以將 API 封裝成 MCP 工具，再由 Agent 自由調用，我們也不用事先讓 AI agent 得知自己可以用哪些 tool，這不僅減少了程式碼的重複編寫，也提高了程式碼的可維護性。
+
+另外在測試時，我們也無須先更動 agent.py 內部的相關程式碼，就可以直接在 MCP Inspector 上測試，非常方便。
